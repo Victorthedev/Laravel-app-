@@ -1,0 +1,28 @@
+---
+- name: Provision Slave node
+  hosts: Slave
+  become: yes
+  tasks:
+    - name: Execute Bashscript
+      copy:
+        src: /home/vagrant/exam/LAMP.sh
+        dest: /tmp/provision.sh
+        mode: '0755'
+      register: result
+
+    - name: php app accessibility
+      uri:
+        url: "http://192.168.33.11"
+        status_code: 200
+      register: response
+
+    - name: print php app accessibility
+      debug:
+        msg: "The php app is accessible (status code: {{ response.status }})"
+
+    - name: cron job for server uptime check
+      cron:
+        name: server uptime check
+        minute: '0'
+        hour: '0'                  
+        job: /home/vagrant/exam/uptime.sh        
